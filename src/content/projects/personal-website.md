@@ -1,7 +1,7 @@
 ---
-title: Personal Website
-summary: This site — a minimalist, content-driven personal site built with Astro.
-repo: https://github.com/andrewghosh/PersonalWebsite
+title: This Website
+summary: Linked the codebase, so if you want to take inspiration feel free.
+repo: https://github.com/Andrew-Ghosh/personal-website
 tech: ["Astro", "TypeScript", "CSS"]
 order: 4
 ---

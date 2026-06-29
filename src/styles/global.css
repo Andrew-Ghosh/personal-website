@@ -458,19 +458,17 @@ p {
   border: 1px solid var(--border);
 }
 
-/* Showcase variant: soft panel, eyebrow header, and a screenshot framed like a
-   browser window that bleeds off the bottom edge of the card. */
+/* Showcase variant: soft panel, eyebrow header, and a screenshot that floats
+   inside the card and bleeds off its bottom edge. The card itself is a fixed
+   height and clips its contents; only the screenshot moves on hover. */
 .project--showcase {
   display: block;
+  position: relative;
+  height: 300px; /* ← card vertical length — change this to make it taller/shorter */
+  overflow: hidden;
   background: var(--panel);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project--showcase:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06), 0 18px 44px rgba(0, 0, 0, 0.08);
 }
 
 .project__head {
@@ -485,27 +483,38 @@ p {
   font-size: 0.95rem;
 }
 
+/* Arrow sits in a circle that's invisible until hover, then lifts into a small
+   white button. */
 .project__arrow {
   flex: 0 0 auto;
-  transition: transform 0.2s ease, color 0.2s ease;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
 .project--showcase:hover .project__arrow {
-  transform: translate(2px, -2px);
   color: var(--text);
+  background: var(--card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-/* The screenshot frame. Rounded only at the top and clipped to a fixed height
-   so the bottom of the screenshot runs off the bottom of the card. */
+/* The screenshot. Pushed down so it floats low in the card with empty panel
+   above it; on hover it scales up in place, like it's coming toward you. The
+   image already includes its own browser chrome, so the frame adds no styling
+   of its own — it's a bare passthrough. */
 .project__frame {
   margin: 0 1.4rem;
-  max-height: 300px;
-  overflow: hidden;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-bottom: none;
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 16px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(30px); /* ← how far down the screenshot floats */
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.project--showcase:hover .project__frame {
+  transform: translateY(30px) scale(1.06);
 }
 
 .project__frame img {
@@ -513,6 +522,12 @@ p {
   width: 100%;
   height: auto;
   object-position: top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project__frame {
+    transition: none;
+  }
 }
 
 /* Text variant */

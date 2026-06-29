@@ -27,22 +27,23 @@ const wrapperProps = link
        window, peeking up from the bottom of a soft panel. */
     <Wrapper class="project project--showcase" {...wrapperProps}>
       <div class="project__head">
-        <span class="project__eyebrow">Projects · {title}</span>
-        <svg
-          class="project__arrow"
-          viewBox="0 0 24 24"
-          width="18"
-          height="18"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <line x1="7" y1="17" x2="17" y2="7" />
-          <polyline points="7 7 17 7 17 17" />
-        </svg>
+        <span class="project__eyebrow">{title}</span>
+        <span class="project__arrow">
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="7" y1="17" x2="17" y2="7" />
+            <polyline points="7 7 17 7 17 17" />
+          </svg>
+        </span>
       </div>
       <div class="project__frame">
         <Picture
@@ -67,7 +68,7 @@ const wrapperProps = link
           ))}
         </ul>
       )}
-      {repo && <a class="project__repo" href={repo}>View source →</a>}
+      {repo && <a class="project__repo" href={repo}>View code repo →</a>}
     </article>
   )
 }
