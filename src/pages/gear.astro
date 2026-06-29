@@ -44,23 +44,34 @@ const sections = [
     This is everything I own, outside my wardrobe (that's one place where minimalism doesn't apply).
   </p>
 
-  <p>
-    You might be wondering:
-  </p>
-
-  <ul>
-    <li>Kitchen stuff? Yahentamitsi Dining Hall.</li>
-    <li>Exercise equipment? Eppley Rec Center.</li>
-    <li>Fun, interesting, things? <a href="https://startupshell.org" target="_blank" rel="noopener noreferrer">Startup Shell</a>.</li>
-  </ul>
-
   <div class="gear-panel">
     {
       sections.map((section) => (
         <section class="gear-section">
           <div class="gear-section__head">
             <h2 class="gear-section__title">{section.title}</h2>
-            <span class="gear-section__count">{section.items.length}</span>
+            <div class="gear-section__controls">
+              <button
+                class="gear-nav"
+                type="button"
+                data-gear-prev
+                aria-label="Scroll left"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button
+                class="gear-nav"
+                type="button"
+                data-gear-next
+                aria-label="Scroll right"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="gear-row">
             {section.items.map((item) => (
@@ -75,4 +86,49 @@ const sections = [
       ))
     }
   </div>
+
+  <p>
+    You might be wondering:
+  </p>
+
+  <ul>
+    <li>Kitchen stuff? Yahentamitsi Dining Hall.</li>
+    <li>Exercise equipment? Eppley Rec Center.</li>
+    <li>Fun, interesting, things? <a href="https://startupshell.org" target="_blank" rel="noopener noreferrer">Startup Shell</a>.</li>
+  </ul>
 </BaseLayout>
+
+<script>
+  // Each gear row scrolls horizontally via its prev/next buttons. The buttons
+  // dim at the extremes once there's nothing left to scroll that way.
+  function initGearCarousels() {
+    document.querySelectorAll<HTMLElement>('.gear-section').forEach((section) => {
+      const row = section.querySelector<HTMLElement>('.gear-row');
+      const prev = section.querySelector<HTMLButtonElement>('[data-gear-prev]');
+      const next = section.querySelector<HTMLButtonElement>('[data-gear-next]');
+      if (!row) return;
+
+      const step = () => Math.max(row.clientWidth * 0.8, 200);
+      prev?.addEventListener('click', () =>
+        row.scrollBy({ left: -step(), behavior: 'smooth' })
+      );
+      next?.addEventListener('click', () =>
+        row.scrollBy({ left: step(), behavior: 'smooth' })
+      );
+
+      // Both arrows stay visible, but dim (disable) at the extremes: the left
+      // one when scrolled fully left, the right one when scrolled fully right.
+      const updateArrows = () => {
+        const max = row.scrollWidth - row.clientWidth;
+        if (prev) prev.disabled = row.scrollLeft <= 1;
+        if (next) next.disabled = max <= 1 || row.scrollLeft >= max - 1;
+      };
+      row.addEventListener('scroll', updateArrows, { passive: true });
+      window.addEventListener('resize', updateArrows);
+      updateArrows();
+    });
+  }
+
+  // Runs on first load and after every client-side (View Transitions) navigation.
+  document.addEventListener('astro:page-load', initGearCarousels);
+</script>

@@ -358,6 +358,7 @@ p {
   border-radius: 18px;
   padding: 1.5rem 1.5rem 0.5rem;
   margin-top: 2rem;
+  margin-bottom: 2.75rem;
 }
 
 .gear-section {
@@ -366,7 +367,7 @@ p {
 
 .gear-section__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 0.9rem;
 }
@@ -377,33 +378,60 @@ p {
   margin: 0;
 }
 
-.gear-section__count {
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-family: var(--font-mono);
+.gear-section__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
+/* Prev/next arrows — always visible; they fade their color on hover. */
+.gear-nav {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.gear-nav:hover {
+  color: var(--text);
+  background: var(--card);
+}
+
+/* Dimmed + non-interactive once you can't scroll any further that way. */
+.gear-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.gear-nav:disabled:hover {
+  color: var(--muted);
+  background: transparent;
+}
+
+/* Horizontal scroller. Scrollbar is hidden — you scroll with the arrows. */
 .gear-row {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
   padding-bottom: 0.75rem;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge */
 }
 
 .gear-row::-webkit-scrollbar {
-  height: 6px;
-}
-.gear-row::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 999px;
+  display: none; /* Chrome / Safari */
 }
 
 .gear-card {
   flex: 0 0 auto;
   width: 150px;
-  scroll-snap-align: start;
 }
 
 .gear-card__thumb {

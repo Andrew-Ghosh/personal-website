@@ -3,6 +3,7 @@
   { "id": "airpods", "name": "AirPods + Charger", "location": "edc" },
   { "id": "watch", "name": "Watch", "location": "edc" },
   { "id": "wallet", "name": "Wallet", "location": "edc" },
+  { "id": "iphone", "name": "iPhone + Charger", "location": "edc" },
   { "id": "pocket-tissues", "name": "Pocket tissues", "location": "edc" },
   { "id": "lip-balm", "name": "Lip balm", "location": "edc" },
   { "id": "cleanser", "name": "Cleanser", "location": "personal-care" },
@@ -14,14 +15,15 @@
   { "id": "electric-razor", "name": "Shaver + Charger", "location": "personal-care" },
   { "id": "nail-clipping-kit", "name": "Nail Kit", "location": "personal-care" },
   { "id": "body-wash", "name": "Body wash", "location": "personal-care" },
-  { "id": "wipes", "name": "Wipes", "location": "personal-care" },
+  { "id": "wipes", "name": "Toilet paper", "location": "personal-care" },
   { "id": "alarm-clock", "name": "Alarm", "location": "other" },
-  { "id": "iphone", "name": "iPhone + Charger", "location": "other" },
-  { "id": "raspberry-pi", "name": "Air Quality Monitor", "location": "other" },
+  { "id": "raspberry-pi", "name": "Raspberry Pi", "location": "other" },
+  { "id": "wires", "name": "Wires & Sensors", "location": "other" },
   { "id": "backpack", "name": "Backpack", "location": "other" },
-  { "id": "bike", "name": "Bike + Maintenance", "location": "other" },
+  { "id": "bike", "name": "Bike, Lock, & Pump", "location": "other" },
   { "id": "hand-vaccum", "name": "Vaccum", "location": "other" },
   { "id": "duffel-bag", "name": "Duffel Bag", "location": "other" },
   { "id": "important-docs", "name": "Documents", "location": "other" },
-  { "id": "puzzles", "name": "Rubik's Puzzles", "location": "other" }
+  { "id": "puzzles", "name": "Rubik's Puzzles", "location": "other" },
+  { "id": "camera", "name": "Camera", "location": "other" }
 ]
