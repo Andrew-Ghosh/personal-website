@@ -1,0 +1,642 @@
+:root {
+  --rail-width: 64px;
+  --rail-left: 50px;
+  --rail-top: 170px;
+  --content-max: 640px;
+
+  --font-serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Light: warm paper */
+  --bg: #f1f0ea;
+  --text: #26251f;
+  --muted: #8c897d;
+  --border: #e2dfd4;
+  --panel: #eae8df;
+  --card: #ffffff;
+  --rail-active: #e3e0d4;
+  --rail-chip: #ffffff;
+  --rail-panel: rgba(255, 255, 255, 0.5);
+  --rail-panel-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 14px 34px rgba(0, 0, 0, 0.07);
+  --accent: #7d8a4d;
+  --link-underline: #c9c5b6;
+  --like-bg: #cdedd0;
+  --like-text: #1f4d2b;
+  --dislike-bg: #f3d4d1;
+  --dislike-text: #7d2e28;
+}
+
+:root[data-theme="dark"] {
+  /* Dark: warm olive near-black */
+  --bg: #1a1b15;
+  --text: #e8e5da;
+  --muted: #908d80;
+  --border: #2c2d25;
+  --panel: #21221b;
+  --card: #262720;
+  --rail-active: #2e2f26;
+  --rail-chip: #2e2f26;
+  --rail-panel: rgba(255, 255, 255, 0.05);
+  --rail-panel-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 14px 34px rgba(0, 0, 0, 0.28);
+  --accent: #a8b573;
+  --link-underline: #44453a;
+  --like-bg: #27402b;
+  --like-text: #b7e0bd;
+  --dislike-bg: #432824;
+  --dislike-text: #e9b8b2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Links: editorial underline, text-colored (no blue) */
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------------------------------------------------------
+   App shell: fixed icon rail on the left, narrow centered content column
+---------------------------------------------------------------------------- */
+
+.rail {
+  position: fixed;
+  top: var(--rail-top); /* fixed distance from the top */
+  left: var(--rail-left); /* space between screen edge and rail */
+  width: var(--rail-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  opacity: 0.62; /* dulled until hovered */
+  transition: opacity 0.25s ease;
+}
+
+.rail:hover,
+.rail:focus-within {
+  opacity: 1;
+}
+
+/* Soft rounded panel sitting behind the group of nav icons. */
+.rail__group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 22px;
+  background: var(--rail-panel);
+  box-shadow: var(--rail-panel-shadow);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Shared chip that sits behind the active icon. JS positions it instantly; the
+   slide between pages is produced by the View Transitions API morphing this
+   named element from its old spot to the new one (single, glitch-free slide).
+   The browser disables that animation under prefers-reduced-motion. */
+.rail__selector {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--rail-chip);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 24px rgba(0, 0, 0, 0.14);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  view-transition-name: rail-selector;
+}
+::view-transition-group(rail-selector) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* During a navigation the named chip is lifted into the view-transition layer,
+   which paints above the page. Lift each icon into that same layer too so they
+   stay visible on top of the chip as it slides past them (rather than being
+   hidden behind it). DOM order already paints them above the chip. */
+.rail__link:nth-of-type(1) { view-transition-name: rail-link-1; }
+.rail__link:nth-of-type(2) { view-transition-name: rail-link-2; }
+.rail__link:nth-of-type(3) { view-transition-name: rail-link-3; }
+.rail__link:nth-of-type(4) { view-transition-name: rail-link-4; }
+/* The icons only need to hold their place above the chip — they don't move.
+   Kill the default old/new cross-fade so the two snapshots don't ghost into a
+   flickering outline; just show the new snapshot instantly. */
+::view-transition-old(rail-link-1),
+::view-transition-old(rail-link-2),
+::view-transition-old(rail-link-3),
+::view-transition-old(rail-link-4) {
+  display: none;
+}
+::view-transition-new(rail-link-1),
+::view-transition-new(rail-link-2),
+::view-transition-new(rail-link-3),
+::view-transition-new(rail-link-4) {
+  animation: none;
+}
+
+/* The theme toggle sits outside the chip's path but, being unnamed, it would
+   ride the page's default root cross-fade and dip in opacity on every nav. Pull
+   it into the view-transition layer too and hold it steady. */
+.rail__toggle {
+  view-transition-name: rail-toggle;
+}
+::view-transition-old(rail-toggle) {
+  display: none;
+}
+::view-transition-new(rail-toggle) {
+  animation: none;
+}
+
+/* Set the theme toggle apart, outside and below the panel. */
+.rail__toggle {
+  margin-top: 1.4rem;
+}
+
+.rail__link,
+.rail__toggle {
+  position: relative; /* sit above the sliding selector chip */
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.rail__link:hover,
+.rail__toggle:hover {
+  color: var(--text);
+}
+
+.rail__link[aria-current="page"] {
+  color: #7fb4e3; /* light blue when selected */
+}
+
+.rail__link svg,
+.rail__toggle svg {
+  width: 25px;
+  height: 25px;
+}
+
+/* Springy little bounce when hovering a nav icon. `will-change` keeps the icon
+   on its own compositor layer so it doesn't get re-rasterized (and snap a pixel)
+   when the transition ends. */
+.rail__link svg {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+.rail__link:hover svg {
+  transform: scale(1.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rail__link svg {
+    transition: none;
+  }
+  .rail__link:hover svg {
+    transform: none;
+  }
+}
+
+/* Theme toggle: friendly sun/moon that rotate-and-fade when switched. */
+.theme-toggle {
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+.theme-toggle:hover {
+  transform: scale(1.12); /* little bounce, like the nav icons */
+}
+.theme-toggle__sun,
+.theme-toggle__moon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.3s ease, transform 0.42s cubic-bezier(0.34, 1.45, 0.6, 1);
+}
+/* Light (default): sun shown, moon tucked away. */
+.theme-toggle__moon {
+  opacity: 0;
+  transform: rotate(-70deg) scale(0.4);
+}
+/* Dark: moon shown, sun tucked away. */
+:root[data-theme="dark"] .theme-toggle__sun {
+  opacity: 0;
+  transform: rotate(70deg) scale(0.4);
+}
+:root[data-theme="dark"] .theme-toggle__moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .theme-toggle__sun,
+  .theme-toggle__moon {
+    transition: opacity 0.2s ease;
+  }
+  .theme-toggle:hover {
+    transform: none;
+  }
+}
+
+.content {
+  margin-left: calc(var(--rail-width) + var(--rail-left));
+  padding: var(--rail-top) 2.5rem 6rem; /* heading lines up with the rail top */
+}
+
+.content-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------------------------
+   Page header: big serif title + muted tagline (the Stammy pattern)
+---------------------------------------------------------------------------- */
+
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+
+.page-tagline {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin: 0 0 2.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 2.75rem 0 1rem;
+}
+
+p {
+  margin: 0 0 1.1rem;
+}
+
+/* ----------------------------------------------------------------------------
+   Figures: large rounded images with a caption underneath
+---------------------------------------------------------------------------- */
+
+.figure {
+  margin: 2rem 0;
+}
+
+.figure img {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+  background: var(--panel);
+}
+
+.figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ----------------------------------------------------------------------------
+   Gear: sections of horizontally-scrolling product cards, in a rounded panel
+---------------------------------------------------------------------------- */
+
+.gear-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.5rem 1.5rem 0.5rem;
+  margin-top: 2rem;
+}
+
+.gear-section {
+  margin-bottom: 1.75rem;
+}
+
+.gear-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.gear-section__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.gear-section__count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.gear-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.gear-row::-webkit-scrollbar {
+  height: 6px;
+}
+.gear-row::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+.gear-card {
+  flex: 0 0 auto;
+  width: 150px;
+  scroll-snap-align: start;
+}
+
+.gear-card__thumb {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.gear-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gear-card__placeholder {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+.gear-card__name {
+  margin: 0.55rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.gear-card__name a {
+  text-decoration: none;
+}
+
+/* ----------------------------------------------------------------------------
+   Projects: large stacked cards. Showcase card (eyebrow label + a framed
+   screenshot peeking from the bottom) when a cover image exists, otherwise a
+   clean editorial text card.
+---------------------------------------------------------------------------- */
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.project {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Showcase variant: soft panel, eyebrow header, and a screenshot framed like a
+   browser window that bleeds off the bottom edge of the card. */
+.project--showcase {
+  display: block;
+  background: var(--panel);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project--showcase:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06), 0 18px 44px rgba(0, 0, 0, 0.08);
+}
+
+.project__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  color: var(--muted);
+}
+
+.project__eyebrow {
+  font-size: 0.95rem;
+}
+
+.project__arrow {
+  flex: 0 0 auto;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.project--showcase:hover .project__arrow {
+  transform: translate(2px, -2px);
+  color: var(--text);
+}
+
+/* The screenshot frame. Rounded only at the top and clipped to a fixed height
+   so the bottom of the screenshot runs off the bottom of the card. */
+.project__frame {
+  margin: 0 1.4rem;
+  max-height: 300px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+.project__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-position: top;
+}
+
+/* Text variant */
+.project--text {
+  background: var(--panel);
+  padding: 1.5rem 1.6rem;
+}
+
+.project__title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+
+.project__title a {
+  text-decoration: none;
+}
+
+.project__summary {
+  color: var(--muted);
+  margin: 0 0 0.9rem;
+}
+
+.project__tech {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.project__tech li {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.project__repo {
+  font-size: 0.85rem;
+}
+
+/* ----------------------------------------------------------------------------
+   About page: duotone-style framed photo + intro
+---------------------------------------------------------------------------- */
+
+.about__figure {
+  max-width: 360px;
+  margin: 1.5rem 0 2rem;
+}
+
+.about__photo {
+  width: 100%;
+  border-radius: 14px;
+  background: var(--panel);
+  display: block;
+}
+
+.about__caption {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Likes / dislikes: rounded tag pills under a ruled heading */
+.taste__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.taste__emoji {
+  font-size: 0.85em;
+}
+
+.taste {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+  margin: 0 0 1.1rem;
+}
+
+.taste li {
+  padding: 0.3rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.taste--like li {
+  background: var(--like-bg);
+  color: var(--like-text);
+}
+
+.taste--dislike li {
+  background: var(--dislike-bg);
+  color: var(--dislike-text);
+}
+
+/* Extra breathing room after the last pill group */
+.taste--dislike {
+  margin-bottom: 2.5rem;
+}
+
+/* ----------------------------------------------------------------------------
+   Responsive
+---------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  :root {
+    --rail-left: 0.75rem;
+    --rail-top: 90px;
+  }
+  .content {
+    padding: var(--rail-top) 1.25rem 4rem;
+  }
+  .page-title {
+    font-size: 1.85rem;
+  }
+}

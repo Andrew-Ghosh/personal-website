@@ -1,0 +1,71 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Rail from '../components/Sidebar.astro';
+import '@fontsource-variable/source-serif-4';
+import '@fontsource-variable/geist-mono';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+
+    {/* Set theme before first paint to avoid a flash of the wrong mode. */}
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const theme =
+          stored ||
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    {/* Keep the theme across client-side (View Transitions) navigations. The
+       incoming server-rendered document has no data-theme, so we stamp it onto
+       the new document *before* the swap copies <html> attributes over — without
+       this the attribute is briefly dropped and the page (most visibly the
+       sun/moon toggle) flickers to light and back. */}
+    <script is:inline>
+      (function () {
+        function currentTheme() {
+          const stored = localStorage.getItem('theme');
+          return (
+            stored ||
+            (matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light')
+          );
+        }
+        document.addEventListener('astro:before-swap', function (e) {
+          e.newDocument.documentElement.dataset.theme = currentTheme();
+        });
+        document.addEventListener('astro:after-swap', function () {
+          document.documentElement.dataset.theme = currentTheme();
+        });
+      })();
+    </script>
+
+    <ClientRouter />
+  </head>
+  <body>
+    <Rail />
+    <main class="content">
+      <div class="content-inner">
+        <slot />
+      </div>
+    </main>
+  </body>
+</html>

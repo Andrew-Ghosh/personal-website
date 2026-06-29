@@ -1,0 +1,78 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GearCard from '../components/GearCard.astro';
+
+// Pull in every gear photo once, here, rather than inside each card. Photos are
+// matched to items by filename — e.g. src/assets/gear/mac.jpg → id "mac". An
+// item with no matching file simply gets `undefined` and the card shows a
+// monogram, so missing photos never break the build.
+const photos = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/gear/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+const photoById = new Map<string, ImageMetadata>(
+  Object.entries(photos).map(([path, mod]) => [
+    path.split('/').pop()!.replace(/\.[^.]+$/, ''),
+    mod.default,
+  ])
+);
+
+const allGear = await getCollection('gear');
+
+const edc = allGear.filter((item) => item.data.location === 'edc');
+const personalCare = allGear.filter(
+  (item) => item.data.location === 'personal-care'
+);
+const other = allGear.filter((item) => item.data.location === 'other');
+
+const sections = [
+  { title: 'EDC', items: edc },
+  { title: 'Hygiene', items: personalCare },
+  { title: 'Other', items: other },
+];
+---
+
+<BaseLayout title="Gear · Andrew Ghosh" description="What I carry and what I own.">
+  <h1 class="page-title">Possesions</h1>
+  <p class="page-tagline">
+    I'm a minimalist, so everything here had to earn its place.
+  </p>
+
+  <p>
+    This is everything I own, outside my wardrobe (that's one place where minimalism doesn't apply).
+  </p>
+
+  <p>
+    You might be wondering:
+  </p>
+
+  <ul>
+    <li>Kitchen stuff? Yahentamitsi Dining Hall.</li>
+    <li>Exercise equipment? Eppley Rec Center.</li>
+    <li>Fun, interesting, things? <a href="https://startupshell.org" target="_blank" rel="noopener noreferrer">Startup Shell</a>.</li>
+  </ul>
+
+  <div class="gear-panel">
+    {
+      sections.map((section) => (
+        <section class="gear-section">
+          <div class="gear-section__head">
+            <h2 class="gear-section__title">{section.title}</h2>
+            <span class="gear-section__count">{section.items.length}</span>
+          </div>
+          <div class="gear-row">
+            {section.items.map((item) => (
+              <GearCard
+                name={item.data.name}
+                link={item.data.link}
+                photo={photoById.get(item.id)}
+              />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+// Cover images are matched to projects by filename — e.g.
+// src/assets/nutrifyumd.png → project id "nutrifyumd". A project with no
+// matching file simply renders as a text card.
+const covers = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+const coverById = new Map<string, ImageMetadata>(
+  Object.entries(covers).map(([path, mod]) => [
+    path.split('/').pop()!.replace(/\.[^.]+$/, ''),
+    mod.default,
+  ])
+);
+
+const projects = await getCollection('projects');
+
+projects.sort((a, b) => {
+  if (a.data.order !== b.data.order) return a.data.order - b.data.order;
+  const da = a.data.date?.getTime() ?? 0;
+  const db = b.data.date?.getTime() ?? 0;
+  return db - da;
+});
+---
+
+<BaseLayout title="Projects · Andrew Ghosh" description="Things I've built.">
+  <h1 class="page-title">Projects</h1>
+  <p class="page-tagline">Things I've designed, built, and shipped.</p>
+
+  <div class="projects">
+    {projects.map((project) => (
+      <ProjectCard {...project.data} cover={coverById.get(project.id)} />
+    ))}
+  </div>
+</BaseLayout>

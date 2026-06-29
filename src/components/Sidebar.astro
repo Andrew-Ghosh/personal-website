@@ -1,0 +1,141 @@
+---
+// Thin icon-only navigation rail (à la Paul Stamatiou). Each item is an icon
+// with a tooltip/aria-label. Add or reorder pages by editing this list; icons
+// are keyed by `icon` and defined in the markup below.
+const links = [
+  { href: '/', label: 'Home', icon: 'home' },
+  { href: '/about', label: 'About', icon: 'person' },
+  { href: '/gear', label: 'Gear', icon: 'backpack' },
+  { href: '/projects', label: 'Projects', icon: 'layers' },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
+---
+
+<nav class="rail" aria-label="Primary" transition:persist>
+  <div class="rail__group">
+  {/* Single chip that slides between icons to mark the active page. */}
+  <span class="rail__selector" aria-hidden="true"></span>
+  {
+    links.map((link) => (
+      <a
+        class="rail__link"
+        href={link.href}
+        title={link.label}
+        aria-label={link.label}
+        aria-current={isActive(link.href) ? 'page' : undefined}
+      >
+        {link.icon === 'home' && (
+          <svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd">
+            <path d="M12 3.15c.43 0 .85.15 1.18.43l6.5 5.45c.46.39.72.95.72 1.55V18a2.6 2.6 0 0 1-2.6 2.6H6.2A2.6 2.6 0 0 1 3.6 18v-7.42c0-.6.26-1.16.72-1.55l6.5-5.45c.33-.28.75-.43 1.18-.43ZM10.9 13.75a1.1 1.1 0 0 0-1.1 1.1V18.4h4.4V14.85a1.1 1.1 0 0 0-1.1-1.1Z" />
+          </svg>
+        )}
+        {link.icon === 'person' && (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="7.8" r="3.7" />
+            <path d="M12 13c-3.7 0-6.6 2.3-6.6 5.2 0 .9.7 1.5 1.6 1.5h10c.9 0 1.6-.6 1.6-1.5C18.6 15.3 15.7 13 12 13Z" />
+          </svg>
+        )}
+        {link.icon === 'backpack' && (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 10.5A4.5 4.5 0 0 1 9.5 6h5A4.5 4.5 0 0 1 19 10.5V18a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18v-7.5Zm4 2.5a1 1 0 0 0-1 1v2.5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V14a1 1 0 0 0-1-1H9Z" />
+            <path d="M8.7 6.4V5.5a3.3 3.3 0 0 1 6.6 0v.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+          </svg>
+        )}
+        {link.icon === 'layers' && (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4.5" y="4.5" width="11" height="11" rx="3" fill-opacity="0.5" />
+            <rect x="8.5" y="8.5" width="11" height="11" rx="3" />
+          </svg>
+        )}
+      </a>
+    ))
+  }
+  </div>
+
+  {/* Friendly sun (light) / moon (dark) that rotate-and-fade when toggled. */}
+  <button id="theme-toggle" class="rail__toggle theme-toggle" type="button" title="Toggle theme" aria-label="Toggle light/dark theme">
+    <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="12" r="5" />
+      <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M12 2.8v1.9" />
+        <path d="M12 19.3v1.9" />
+        <path d="M2.8 12h1.9" />
+        <path d="M19.3 12h1.9" />
+        <path d="M5.6 5.6l1.35 1.35" />
+        <path d="M17.05 17.05l1.35 1.35" />
+        <path d="M18.4 5.6l-1.35 1.35" />
+        <path d="M6.95 17.05L5.6 18.4" />
+      </g>
+    </svg>
+    <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
+      {/* Masked-circle crescent (Paul's technique); cradle rotated slightly for the tilt. */}
+      <mask id="moonMask">
+        <rect x="0" y="0" width="24" height="24" fill="#fff" />
+        <circle cx="18.6" cy="8.3" r="10.6" fill="#000" />
+      </mask>
+      <circle cx="12" cy="12" r="9" fill="currentColor" mask="url(#moonMask)" />
+    </svg>
+  </button>
+</nav>
+
+<script>
+  // Attach the theme toggle once. Guard against duplicate binding since the
+  // rail persists across View Transitions navigations.
+  function bindThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', () => {
+      const next =
+        document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+    });
+  }
+  // Snap the shared selector chip to sit behind the active icon. We always set
+  // the position *instantly*; the slide between pages is produced by the View
+  // Transitions API morphing the chip's `view-transition-name` (see CSS), not a
+  // CSS transition. Doing it any other way races the page snapshot and causes a
+  // visible double-slide.
+  function moveSelector() {
+    const selector = document.querySelector('.rail__selector');
+    const active = document.querySelector('.rail__link[aria-current="page"]');
+    if (!selector) return;
+    if (active) {
+      selector.style.width = active.offsetWidth + 'px';
+      selector.style.height = active.offsetHeight + 'px';
+      selector.style.transform =
+        'translate(' + active.offsetLeft + 'px,' + active.offsetTop + 'px)';
+      selector.style.opacity = '1';
+    } else {
+      selector.style.opacity = '0';
+    }
+  }
+
+  // The rail persists across navigations, so its build-time active state is
+  // stale after a client-side nav. Recompute which link is current on each load.
+  function updateActiveLink() {
+    const here = location.pathname.replace(/\/$/, '') || '/';
+    document.querySelectorAll('.rail__link').forEach((a) => {
+      const href = (a.getAttribute('href') || '').replace(/\/$/, '') || '/';
+      if (href === here) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    moveSelector();
+  }
+
+  bindThemeToggle();
+  updateActiveLink();
+  // Reposition if the viewport changes the icon layout.
+  window.addEventListener('resize', moveSelector);
+  // Position the chip *before* the new page snapshot is captured, so the View
+  // Transition animates the named chip from its old spot to the new one — one
+  // smooth, browser-driven slide.
+  document.addEventListener('astro:after-swap', updateActiveLink);
+  document.addEventListener('astro:page-load', () => {
+    bindThemeToggle();
+    syncThemeSwitch();
+  });
+</script>

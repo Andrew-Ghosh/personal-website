@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const likes = [
+  "Family", "Friends", "Effective Altruism", "Longevity",
+  "Philosophy", "Side Projects", "Technology", "Minimalism",
+  "Maximalism", "Entrepreneurship", "Sushi", "Meditation",
+  "Light Blue", "LLMs", "Space", "Surrealism", "Stoicism", "San Francisco",
+  "Cozy Cabins", "Studio Ghibli", "Stickman Fight Animations", "Open-Mindedness",
+];
+
+const dislikes = [
+  "Coffee", "Social Media", "Notifications", "Narrow-mindedness", "Alcohol",
+  "Pessimism", "Arguments", "Berries", "Ads", "Reality TV",
+  "Group chats", "Politics", "Drama", "Wasps", "All-nighters",
+];
+---
+
+<BaseLayout
+  title="About · Andrew Ghosh"
+  description="A bit about Andrew Ghosh."
+>
+  <h1 class="page-title">Andrew Mark Ghosh</h1>
+  <p class="page-tagline">That's my full name. I'm 19. Here's more stuff about me:</p>
+
+  <figure class="about__figure">
+    <img class="about__photo" src="/images/me.jpg" alt="Andrew Ghosh" />
+    <figcaption class="about__caption">
+      Selfie I took from my Mac while making this site.
+    </figcaption>
+  </figure>
+
+  <p>
+    The summer before I started college I was trying to figure out what I wanted to do with my life.
+    After lots of pondering, I came to some conclusions.
+  </p>
+    
+
+ <p>
+ My ideal life goes like this:
+ </p>
+
+ <ol>
+    <li>Launch a successful tech startup</li>
+    <li>Feel good about myself because it had actual value and made millions of people's lives better</li>
+    <li>Use my wealth to fund human longevity research</li>
+    <li>Either start my own longevity thing or just dive into my interests</li>
+  </ol>
+  <p>
+    Since that summer, I've tried and failed at 3 startups. I'm currently on my 4th, NutrifyUMD (meal planning app for UMD students).
+  </p>
+  <h2 class="taste__heading">Likes <span class="taste__emoji">😄</span></h2>
+  <ul class="taste taste--like">
+    {likes.map((item) => <li>{item}</li>)}
+  </ul>
+
+  <h2 class="taste__heading">Dislikes <span class="taste__emoji">😒</span></h2>
+  <ul class="taste taste--dislike">
+    {dislikes.map((item) => <li>{item}</li>)}
+  </ul>
+
+  <p>
+    Fun facts:
+  </p>
+  <ul>
+    <li>Lived in New York, New Jersey, Texas, and Maryland.</li>
+    <li>Traveled to Japan, Armenia, Hong Kong, and Jamaica.</li>
+    <li>Can solve 3x3, 2x2, and pyraminx rubik's puzzles.</li>
+  </ul>
+
+  <p>
+    Accomplishments:
+  </p>
+  <ul>
+    <li>1st place marathon finish (17 y/o)</li>
+    <li>Top 1% standardized test score (17 y/o)</li>
+    <li>Nothing else since (college apps are over yay)</li>
+  </ul>
+
+  <p>
+    So like yeah that's it. Here's some links:
+  </p>
+
+  <p>
+    Email: me@andrewghosh.com
+  </p>
+  <p>
+    LinkedIn: https://www.linkedin.com/in/andrew-ghosh-788684354/
+  </p>
+  <p>
+    Chat: https://cal.com/andrew-ghosh-o6rtxi/quick-chat
+  </p>
+  
+</BaseLayout>

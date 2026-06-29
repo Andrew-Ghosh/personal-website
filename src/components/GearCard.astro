@@ -1,0 +1,37 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+
+interface Props {
+  name: string;
+  link?: string;
+  photo?: ImageMetadata;
+}
+
+const { name, link, photo } = Astro.props;
+
+// Fallback monogram when no product photo is provided.
+const initial = name.trim().charAt(0).toUpperCase();
+---
+
+<div class="gear-card">
+  <div class="gear-card__thumb">
+    {
+      photo ? (
+        <Picture
+          src={photo}
+          formats={['avif', 'webp']}
+          alt={name}
+          width={150}
+          densities={[1, 2]}
+          loading="lazy"
+        />
+      ) : (
+        <span class="gear-card__placeholder">{initial}</span>
+      )
+    }
+  </div>
+  <p class="gear-card__name">
+    {link ? <a href={link}>{name}</a> : name}
+  </p>
+</div>

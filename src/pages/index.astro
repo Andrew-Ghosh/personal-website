@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Andrew Ghosh"
+  description="Personal site of Andrew Ghosh — developer and minimalist."
+>
+  <h1 class="page-title">Sup! I'm Andrew, a UMD sophomore.</h1>
+
+  <p>
+    Welcome to my corner of the web, where I write about startups, minimalism, productivity, and just about anything else that interests me. Also this site is a work in progress, so expect changes.
+  </p>
+  <p>
+    My main thing is being Director of Community at <a href="https://startupshell.org" target="_blank" rel="noopener noreferrer">Startup Shell</a>, where I come up with cool entrepreneurial events to throw in our space.
+    <a href="/about">Read more »</a>
+  </p>
+
+  <ul class="creds">
+    <li>University of Maryland BS, Computer Science</li>
+    <li>Building NutrifyUMD (meal-planning app for UMD students)</li>
+    <li>Graduate TA for UMD Tech Entrepreneurship Master's Students</li>
+  </ul>
+</BaseLayout>
+
+<style>
+  .creds {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    color: var(--muted);
+  }
+  .creds li {
+    padding: 0.35rem 0;
+  }
+</style>
