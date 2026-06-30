@@ -11,6 +11,13 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// Absolute URLs for canonical + social tags. Astro.site is set in
+// astro.config.mjs; new URL() resolves each path against it.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+const ogDescription =
+  description ?? 'Personal site of Andrew Ghosh — developer and minimalist.';
 ---
 
 <!doctype html>
@@ -22,6 +29,23 @@ const { title, description } = Astro.props;
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+
+    {/* Open Graph — rich previews on iMessage, LinkedIn, Discord, Slack, etc. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Andrew Ghosh" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    {/* Twitter/X card */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
 
     {/* Resolve the theme (stored choice, else OS preference) and apply it before
        the first paint to avoid a flash of the wrong mode. We also re-apply it

@@ -648,6 +648,21 @@ p {
   color: var(--muted);
 }
 
+/* Signature: transparent PNG with black ink. No panel background, and in dark
+   mode flip the ink to white so it reads on the dark page. */
+.about__figure--signature {
+  max-width: 280px;
+}
+
+.about__signature {
+  width: 100%;
+  display: block;
+}
+
+:root[data-theme="dark"] .about__signature {
+  filter: invert(1);
+}
+
 /* Likes / dislikes: rounded tag pills under a ruled heading */
 .taste__heading {
   display: flex;

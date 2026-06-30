@@ -2,6 +2,9 @@
 import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import mePhoto from '../assets/me.jpg';
+import umdPhoto from '../assets/umd.jpg';
+import ideaFactoryPhoto from '../assets/ideafactory.jpg';
+import signature from '../assets/signature.png';
 
 const likes = [
   "Family", "Friends", "Effective Altruism", "Longevity",
@@ -81,17 +84,52 @@ const dislikes = [
     Accomplishments:
   </p>
   <ul>
-    <li>1st place marathon finish (17 y/o)</li>
-    <li>Top 1% standardized test score (17 y/o)</li>
-    <li>Nothing else since (college apps are over yay)</li>
+    <li>1st place in marathon (19 & Under, 2024 International Peace Marathon)</li>
+    <li>Top 1% test score (2023 PSAT National Merit Commended Student)</li>
+    <li>Marathon was 26 miles/42 kilometers | 3.7 million people took the PSAT</li>
   </ul>
 
   <p>
-    So like yeah that's it. Here's some links:
+    Also I don't like full minimalism, I like minimalism with cool sparks here and there. 
+    That's one reason I love campus; most buildings have the staple mostly brick + white highlights look with similar (beautifully simple) architetcure, 
   </p>
 
+  <figure class="about__figure">
+    <Picture
+      class="about__photo"
+      src={umdPhoto}
+      formats={['avif', 'webp']}
+      alt="A classic brick-and-white University of Maryland building"
+      width={360}
+      densities={[1, 2]}
+      loading="lazy"
+    />
+  </figure>
+    
   <p>
-    Email: thisisandrewmg "at" gmail "dot" com
+    and then randomly you'll see a crazy cool colorful looking building.
+    I'm lucky enough to be in my favorite one every day: the IDEA factory.
+  </p>
+
+  <figure class="about__figure">
+    <Picture
+      class="about__photo"
+      src={ideaFactoryPhoto}
+      formats={['avif', 'webp']}
+      alt="The colorful IDEA Factory building at the University of Maryland"
+      width={360}
+      densities={[1, 2]}
+      loading="lazy"
+    />
+    <figcaption class="about__caption">
+      You can see the Startup Shell space in the bottom left.
+    </figcaption>
+  </figure>
+  <p>
+    I don't use social media and am on LinkedIn once a month so the best way to contact me is just via cal or email.
+  </p>
+  <p>
+    Email: <a href="mailto:thisisandrewmg@gmail.com">thisisandrewmg@gmail.com</a>
   </p>
   <p>
     LinkedIn: <a href="https://www.linkedin.com/in/andrew-ghosh-788684354/" target="_blank" rel="noopener noreferrer">linkedin.com/in/andrew-ghosh</a>
@@ -99,5 +137,17 @@ const dislikes = [
   <p>
     Chat: <a href="https://cal.com/andrew-ghosh-o6rtxi/quick-chat" target="_blank" rel="noopener noreferrer">cal.com/andrew-ghosh-o6rtxi/quick-chat</a>
   </p>
+
+  <figure class="about__figure about__figure--signature">
+    <Picture
+      class="about__signature"
+      src={signature}
+      formats={['webp']}
+      alt="Andrew Ghosh's signature"
+      width={280}
+      densities={[1, 2]}
+      loading="lazy"
+    />
+  </figure>
   
 </BaseLayout>
