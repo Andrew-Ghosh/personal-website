@@ -18,27 +18,26 @@ const photoById = imageMapByStem(
 
 const allGear = await getCollection('gear');
 
-const edc = allGear.filter((item) => item.data.location === 'edc');
-const personalCare = allGear.filter(
-  (item) => item.data.location === 'personal-care'
-);
-const other = allGear.filter((item) => item.data.location === 'other');
-
+// Section title and its `location` are declared together; each section pulls the
+// items whose location matches, so adding a bucket is a one-line change.
 const sections = [
-  { title: 'EDC', items: edc },
-  { title: 'Hygiene', items: personalCare },
-  { title: 'Other', items: other },
-];
+  { title: 'EDC', location: 'edc' },
+  { title: 'Hygiene', location: 'personal-care' },
+  { title: 'Other', location: 'other' },
+].map((section) => ({
+  title: section.title,
+  items: allGear.filter((item) => item.data.location === section.location),
+}));
 ---
 
 <BaseLayout title="Gear · Andrew Ghosh" description="What I carry and what I own.">
-  <h1 class="page-title">Possesions</h1>
+  <h1 class="page-title">Everything I Own</h1>
   <p class="page-tagline">
     I'm a minimalist, so everything here had to earn its place.
   </p>
 
   <p>
-    This is everything I own, outside my wardrobe (that's one place where minimalism doesn't apply).
+    This is all of my stuff, outside my wardrobe (that's one place where minimalism doesn't apply).
   </p>
 
   <div class="gear-panel">

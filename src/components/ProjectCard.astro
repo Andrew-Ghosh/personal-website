@@ -13,6 +13,20 @@ interface Props {
 
 const { title, summary, link, repo, tech, cover } = Astro.props;
 
+// The summary may contain inline markdown links — [text](url). Escape the text
+// first, then turn those links into real anchors that open in a new tab.
+const escapeHtml = (s: string) =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+const summaryHtml = escapeHtml(summary).replace(
+  /\[([^\]]+)\]\(([^)]+)\)/g,
+  (_, text, url) =>
+    `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`,
+);
+
 // When a project has a link the whole card becomes an <a> (new tab); otherwise
 // a plain <article>. Same markup either way, just a different wrapper element.
 const Wrapper = link ? 'a' : 'article';
@@ -60,7 +74,7 @@ const wrapperProps = link
     /* Text variant: clean editorial card. */
     <article class="project project--text">
       <h3 class="project__title">{link ? <a href={link} target="_blank" rel="noopener noreferrer">{title}</a> : title}</h3>
-      <p class="project__summary">{summary}</p>
+      <p class="project__summary" set:html={summaryHtml} />
       {tech.length > 0 && (
         <ul class="project__tech">
           {tech.map((t) => (

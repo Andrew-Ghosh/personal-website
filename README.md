@@ -3,7 +3,7 @@
 Personal website — a minimalist, content-driven site built with [Astro](https://astro.build),
 styled after the warm, editorial feel of [paulstamatiou.com](https://paulstamatiou.com).
 
-- Thin **icon rail** on the left (Home · About · Gear · Projects + a light/dark toggle)
+- Thin **icon rail** on the left (Home · About · Possessions · Projects + a light/dark toggle)
 - **Editorial serif** typography (Source Serif 4 + Geist Mono, self-hosted)
 - Warm paper / warm-dark palette, automatic light/dark with a manual toggle
 - Instant, no-flash navigation via Astro View Transitions
@@ -46,3 +46,11 @@ npm run preview  # preview the production build locally
 
 Builds to static files (`npm run build` → `dist/`). Host on Cloudflare Pages,
 Netlify, Vercel, or GitHub Pages, then point `andrewghosh.com` at it via DNS.
+
+## Credits
+
+Design inspiration, with thanks:
+
+- [paulstamatiou.com](https://paulstamatiou.com) — the overall format and warm, editorial feel
+- [danielwirtz.com](https://danielwirtz.com) — the likes / dislikes tag pills
+- [chester.how](https://chester.how) — the project cards with a webpage framed inside

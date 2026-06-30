@@ -23,32 +23,22 @@ const { title, description } = Astro.props;
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
-    {/* Set theme before first paint to avoid a flash of the wrong mode. */}
-    <script is:inline>
-      (function () {
-        const stored = localStorage.getItem('theme');
-        const theme =
-          stored ||
-          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.dataset.theme = theme;
-      })();
-    </script>
-    {/* Keep the theme across client-side (View Transitions) navigations. The
-       incoming server-rendered document has no data-theme, so we stamp it onto
-       the new document *before* the swap copies <html> attributes over — without
-       this the attribute is briefly dropped and the page (most visibly the
-       sun/moon toggle) flickers to light and back. */}
+    {/* Resolve the theme (stored choice, else OS preference) and apply it before
+       the first paint to avoid a flash of the wrong mode. We also re-apply it
+       across client-side (View Transitions) navigations: the incoming
+       server-rendered document has no data-theme, so we stamp it on *before* the
+       swap copies <html> attributes over — without this the attribute is briefly
+       dropped and the page (most visibly the sun/moon toggle) flickers to light
+       and back. */}
     <script is:inline>
       (function () {
         function currentTheme() {
-          const stored = localStorage.getItem('theme');
           return (
-            stored ||
-            (matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light')
+            localStorage.getItem('theme') ||
+            (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
           );
         }
+        document.documentElement.dataset.theme = currentTheme();
         document.addEventListener('astro:before-swap', function (e) {
           e.newDocument.documentElement.dataset.theme = currentTheme();
         });

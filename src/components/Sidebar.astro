@@ -5,7 +5,7 @@
 const links = [
   { href: '/', label: 'Home', icon: 'home' },
   { href: '/about', label: 'About', icon: 'person' },
-  { href: '/gear', label: 'Gear', icon: 'backpack' },
+  { href: '/gear', label: 'Possessions', icon: 'backpack' },
   { href: '/projects', label: 'Projects', icon: 'layers' },
 ];
 
@@ -22,7 +22,6 @@ const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
       <a
         class="rail__link"
         href={link.href}
-        title={link.label}
         aria-label={link.label}
         aria-current={isActive(link.href) ? 'page' : undefined}
       >
@@ -49,6 +48,7 @@ const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
             <rect x="8.5" y="8.5" width="11" height="11" rx="3" />
           </svg>
         )}
+        <span class="rail__label">{link.label}</span>
       </a>
     ))
   }
@@ -114,12 +114,15 @@ const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
     }
   }
 
+  // Normalize a path/href for comparison: drop a trailing slash, root stays '/'.
+  const norm = (p: string) => p.replace(/\/$/, '') || '/';
+
   // The rail persists across navigations, so its build-time active state is
   // stale after a client-side nav. Recompute which link is current on each load.
   function updateActiveLink() {
-    const here = location.pathname.replace(/\/$/, '') || '/';
+    const here = norm(location.pathname);
     document.querySelectorAll('.rail__link').forEach((a) => {
-      const href = (a.getAttribute('href') || '').replace(/\/$/, '') || '/';
+      const href = norm(a.getAttribute('href') || '');
       if (href === here) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
@@ -130,6 +133,30 @@ const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
   updateActiveLink();
   // Reposition if the viewport changes the icon layout.
   window.addEventListener('resize', moveSelector);
+
+  // The icon-group panel fades in while the pointer is inside it. On a
+  // client-side navigation the DOM swaps under a stationary cursor and CSS
+  // :hover goes stale until the pointer next moves — so a panel that was visible
+  // (you clicked an icon inside it) would flash off for a beat right after the
+  // nav. If the pointer was inside the group when navigation began, hold the
+  // panel visible across the swap and release it on the next real pointer move,
+  // when :hover is accurate again. (We skip the hold when the pointer wasn't
+  // inside — e.g. keyboard nav — so the panel doesn't wrongly flash on.) The flag
+  // lives on the rail itself: a class on <html> gets wiped when Astro copies the
+  // incoming page's <html> attributes mid-swap (why the theme is re-stamped in
+  // BaseLayout).
+  const rail = () => document.querySelector('.rail');
+  const releasePanel = () => rail()?.classList.remove('is-navigating');
+  let holdPanelThisNav = false;
+  document.addEventListener('astro:before-preparation', () => {
+    holdPanelThisNav = !!document.querySelector('.rail__group')?.matches(':hover');
+    if (holdPanelThisNav) rail()?.classList.add('is-navigating');
+  });
+  document.addEventListener('astro:after-swap', () => {
+    if (!holdPanelThisNav) return;
+    rail()?.classList.add('is-navigating'); // re-assert over the freshly swapped DOM
+    window.addEventListener('pointermove', releasePanel, { once: true });
+  });
   // Position the chip *before* the new page snapshot is captured, so the View
   // Transition animates the named chip from its old spot to the new one — one
   // smooth, browser-driven slide.

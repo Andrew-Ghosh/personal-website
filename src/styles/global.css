@@ -98,16 +98,22 @@ code {
   flex-direction: column;
   align-items: center;
   z-index: 10;
-  opacity: 0.62; /* dulled until hovered */
-  transition: opacity 0.25s ease;
 }
 
-.rail:hover,
-.rail:focus-within {
+/* During a client-side navigation the DOM swaps under a stationary cursor, and
+   the browser doesn't re-evaluate :hover until the pointer next moves — so the
+   hover-driven panel would flash off for a beat after every nav. Hold the panel
+   visible across the swap; the script drops this flag on the next pointermove,
+   when :hover is accurate again, making the handoff seamless. The flag lives on
+   the rail (not <html>, whose attributes Astro overwrites from the incoming page
+   mid-swap). */
+.rail.is-navigating .rail__group::before {
   opacity: 1;
 }
 
-/* Soft rounded panel sitting behind the group of nav icons. */
+/* Icon group. The soft rounded panel behind the icons lives on ::before so it
+   can fade independently of the icons themselves: hidden at rest, fading in only
+   while the pointer is inside the group, and back out when it leaves. */
 .rail__group {
   position: relative;
   display: flex;
@@ -115,11 +121,22 @@ code {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
+}
+.rail__group::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* behind the chip (auto) and icons (z-index: 1) */
   border-radius: 22px;
   background: var(--rail-panel);
   box-shadow: var(--rail-panel-shadow);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.rail__group:hover::before {
+  opacity: 1;
 }
 
 /* Shared chip that sits behind the active icon. JS positions it instantly; the
@@ -196,20 +213,58 @@ code {
   height: 44px;
   border-radius: 13px;
   color: var(--muted);
+  /* Each icon dims on its own; only the hovered/focused/active one fades to
+     full. (Previously a single opacity on the whole rail faded them as a group.) */
+  opacity: 0.62;
   background: transparent;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, opacity 0.2s ease;
 }
 
 .rail__link:hover,
-.rail__toggle:hover {
+.rail__toggle:hover,
+.rail__link:focus-visible,
+.rail__toggle:focus-visible {
   color: var(--text);
+  opacity: 1;
 }
 
 .rail__link[aria-current="page"] {
   color: #7fb4e3; /* light blue when selected */
+  opacity: 1; /* current page stays fully visible */
+}
+
+/* Name that slides out to the right of a nav icon on hover/focus. Scoped to
+   .rail__link so the theme toggle never gets one. */
+.rail__label {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  padding: 0.3rem 0.6rem;
+  border-radius: 9px;
+  background: var(--rail-chip);
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1;
+  white-space: nowrap; /* keep the label on one line */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none; /* never intercept the icon's hover */
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.rail__link:hover .rail__label,
+.rail__link:focus-visible .rail__label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rail__label {
+    transition: opacity 0.18s ease;
+    transform: translateY(-50%);
+  }
 }
 
 .rail__link svg,

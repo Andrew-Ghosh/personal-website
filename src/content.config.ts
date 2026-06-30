@@ -2,14 +2,14 @@ import { defineCollection, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 
 // Gear: a single JSON file holding the full list of items. Each item is tagged
-// with a `location` so the Gear page can split it into Workspace, EDC (everyday
-// carry), and Personal care. Add an item by adding an object to the array.
+// with a `location` so the Gear page can split it into its three buckets: edc
+// (everyday carry), personal-care (shown as "Hygiene"), and other. Add an item
+// by adding an object to the array.
 const gear = defineCollection({
   loader: file('src/content/gear/gear.json'),
   schema: z.object({
     name: z.string(),
     location: z.enum(['edc', 'personal-care', 'other']),
-    note: z.string().optional(),
     link: z.string().url().optional(),
     // Photos aren't listed here — drop a file in src/assets/gear named after the
     // item's id (e.g. mac.jpg) and GearCard picks it up automatically.
