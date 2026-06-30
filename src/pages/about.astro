@@ -1,5 +1,7 @@
 ---
+import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import mePhoto from '../assets/me.jpg';
 
 const likes = [
   "Family", "Friends", "Effective Altruism", "Longevity",
@@ -24,7 +26,14 @@ const dislikes = [
   <p class="page-tagline">That's my full name. I'm 19. Here's more stuff about me:</p>
 
   <figure class="about__figure">
-    <img class="about__photo" src="/images/me.jpg" alt="Andrew Ghosh" />
+    <Picture
+      class="about__photo"
+      src={mePhoto}
+      formats={['avif', 'webp']}
+      alt="Andrew Ghosh"
+      width={360}
+      densities={[1, 2]}
+    />
     <figcaption class="about__caption">
       Selfie I took from my Mac while making this site.
     </figcaption>
@@ -82,13 +91,13 @@ const dislikes = [
   </p>
 
   <p>
-    Email: me@andrewghosh.com
+    Email: <a href="mailto:me@andrewghosh.com">me@andrewghosh.com</a>
   </p>
   <p>
-    LinkedIn: https://www.linkedin.com/in/andrew-ghosh-788684354/
+    LinkedIn: <a href="https://www.linkedin.com/in/andrew-ghosh-788684354/" target="_blank" rel="noopener noreferrer">linkedin.com/in/andrew-ghosh</a>
   </p>
   <p>
-    Chat: https://cal.com/andrew-ghosh-o6rtxi/quick-chat
+    Chat: <a href="https://cal.com/andrew-ghosh-o6rtxi/quick-chat" target="_blank" rel="noopener noreferrer">cal.com/andrew-ghosh-o6rtxi/quick-chat</a>
   </p>
   
 </BaseLayout>

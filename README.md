@@ -3,7 +3,7 @@
 Personal website — a minimalist, content-driven site built with [Astro](https://astro.build),
 styled after the warm, editorial feel of [paulstamatiou.com](https://paulstamatiou.com).
 
-- Thin **icon rail** on the left (About · Gear · Projects + a light/dark toggle)
+- Thin **icon rail** on the left (Home · About · Gear · Projects + a light/dark toggle)
 - **Editorial serif** typography (Source Serif 4 + Geist Mono, self-hosted)
 - Warm paper / warm-dark palette, automatic light/dark with a manual toggle
 - Instant, no-flash navigation via Astro View Transitions
@@ -23,22 +23,24 @@ npm run preview  # preview the production build locally
 | --- | --- |
 | Icon rail / nav | `src/components/Sidebar.astro` |
 | Page shell, fonts, theme script | `src/layouts/BaseLayout.astro` |
-| About page (photo + bio) | `src/pages/index.astro` |
-| Your photo | `public/images/me.jpg` (add this file) |
+| Home page | `src/pages/index.astro` |
+| About page (photo + bio) | `src/pages/about.astro` |
+| Your photo | `src/assets/me.jpg` |
 | Gear list | `src/content/gear/gear.json` |
 | Projects | `src/content/projects/*.md` (one file per project) |
 | Colors, typography, layout | `src/styles/global.css` |
 
 ## Editing content
 
-- **Add a gear item:** add an object to `src/content/gear/gear.json`. Set
-  `"location"` to `"backpack"` or `"owned"` to choose its section. Add an
-  optional `"image"` (e.g. `"/images/gear/bag.jpg"`) for a product photo —
-  without one, the card shows a letter monogram.
+- **Add a gear item:** add an object to `src/content/gear/gear.json` with an
+  `id`, `name`, and `location` (`"edc"`, `"personal-care"`, or `"other"`). For a
+  product photo, drop a file in `src/assets/gear/` named after the item's `id`
+  (e.g. `mac.jpg`) — without one, the card shows a letter monogram.
 - **Add a project:** drop a new `.md` file into `src/content/projects/`. Lower
-  `order` values sort first. Add an optional `cover:` image in the frontmatter
-  to render it as a large hero card (à la Paul's photo collections); without a
-  cover it renders as a clean text card.
+  `order` values sort first. For a large hero card (à la Paul's photo
+  collections), drop a cover image in `src/assets/` named after the project's id
+  (its `.md` filename, e.g. `nutrifyumd.png`); without one it renders as a clean
+  text card.
 
 ## Deploy
 

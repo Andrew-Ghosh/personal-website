@@ -59,7 +59,7 @@ const wrapperProps = link
   ) : (
     /* Text variant: clean editorial card. */
     <article class="project project--text">
-      <h3 class="project__title">{link ? <a href={link}>{title}</a> : title}</h3>
+      <h3 class="project__title">{link ? <a href={link} target="_blank" rel="noopener noreferrer">{title}</a> : title}</h3>
       <p class="project__summary">{summary}</p>
       {tech.length > 0 && (
         <ul class="project__tech">
@@ -68,7 +68,7 @@ const wrapperProps = link
           ))}
         </ul>
       )}
-      {repo && <a class="project__repo" href={repo}>View code repo →</a>}
+      {repo && <a class="project__repo" href={repo} target="_blank" rel="noopener noreferrer">View code repo →</a>}
     </article>
   )
 }

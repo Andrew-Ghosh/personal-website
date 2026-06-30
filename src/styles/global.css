@@ -85,15 +85,6 @@ code {
   font-size: 0.85em;
 }
 
-.muted {
-  color: var(--muted);
-}
-
-.mono {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ----------------------------------------------------------------------------
    App shell: fixed icon rail on the left, narrow centered content column
 ---------------------------------------------------------------------------- */
@@ -227,15 +218,15 @@ code {
   height: 25px;
 }
 
-/* Springy little bounce when hovering a nav icon. `will-change` keeps the icon
-   on its own compositor layer so it doesn't get re-rasterized (and snap a pixel)
-   when the transition ends. */
+/* Springy little bounce when hovering a nav icon. `will-change` is applied only
+   while hovered, so we promote the icon to its own compositor layer just for the
+   bounce instead of keeping a layer alive for every icon at rest. */
 .rail__link svg {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
 }
 .rail__link:hover svg {
   transform: scale(1.18);
+  will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
   .rail__link svg {
@@ -250,10 +241,10 @@ code {
 .theme-toggle {
   position: relative;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
 }
 .theme-toggle:hover {
   transform: scale(1.12); /* little bounce, like the nav icons */
+  will-change: transform;
 }
 .theme-toggle__sun,
 .theme-toggle__moon {
@@ -325,27 +316,6 @@ h2 {
 
 p {
   margin: 0 0 1.1rem;
-}
-
-/* ----------------------------------------------------------------------------
-   Figures: large rounded images with a caption underneath
----------------------------------------------------------------------------- */
-
-.figure {
-  margin: 2rem 0;
-}
-
-.figure img {
-  width: 100%;
-  border-radius: 14px;
-  display: block;
-  background: var(--panel);
-}
-
-.figure figcaption {
-  margin-top: 0.6rem;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 /* ----------------------------------------------------------------------------

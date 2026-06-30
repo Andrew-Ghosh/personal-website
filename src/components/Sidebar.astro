@@ -136,6 +136,5 @@ const isActive = (href: string) => current === (href.replace(/\/$/, '') || '/');
   document.addEventListener('astro:after-swap', updateActiveLink);
   document.addEventListener('astro:page-load', () => {
     bindThemeToggle();
-    syncThemeSwitch();
   });
 </script>

@@ -5,7 +5,3 @@ link: https://minimalisthabittracker.com
 tech: ["React", "TypeScript", "CSS"]
 order: 3
 ---
-
-A habit tracker stripped down to the one thing that matters: did you show up
-today? No gamification, no notifications, no clutter — just a quiet grid of days
-and a streak worth protecting.

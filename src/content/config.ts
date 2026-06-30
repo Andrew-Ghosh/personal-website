@@ -16,9 +16,9 @@ const gear = defineCollection({
   }),
 });
 
-// Projects: one Markdown file per project. Frontmatter holds the metadata,
-// the Markdown body is the longer description. Add a project by dropping a new
-// `.md` file into src/content/projects/.
+// Projects: one Markdown file per project. The frontmatter holds all the
+// metadata the Projects page renders. Add a project by dropping a new `.md`
+// file into src/content/projects/.
 const projects = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/projects' }),
   schema: z.object({
