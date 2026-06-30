@@ -1,0 +1,19 @@
+{
+  // Cloudflare configuration for deploying the static Astro build.
+  // https://developers.cloudflare.com/workers/wrangler/configuration/
+  "name": "personal-website",
+  "compatibility_date": "2026-06-29",
+
+  // Serve the static files produced by `npm run build`.
+  "assets": {
+    "directory": "./dist"
+  },
+
+  // Silence the deploy warnings: only the custom domain (andrewghosh.com)
+  // should serve the site, so disable the extra *.workers.dev URL.
+  "workers_dev": false,
+
+  // Keep per-deploy preview URLs on — handy for checking a change before it
+  // reaches the live domain. Set to false to disable them entirely.
+  "preview_urls": true
+}
